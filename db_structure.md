@@ -4,6 +4,7 @@
 - `name`: String
 - `email`: String (unique)
 - `password`: String (hashed)
+-`CPF`: String (unique)
 - `role`: Enum ['admin', 'operator', 'stockist', 'manager']
 - `active`: Boolean
 

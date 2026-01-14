@@ -8,7 +8,6 @@ router.use('/suppliers', require('./supplier.routes'));
 router.use('/customers', require('./customer.routes'));
 router.use('/stock', require('./stock.routes'));
 router.use('/reports', require('./report.routes'));
-//router.use('/sales', require('./report.routes')); //reundante
 router.use('/health', require('./health.routes'));
 router.use('/users', require('./user.routes'));
 

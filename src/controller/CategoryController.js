@@ -18,4 +18,13 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+const getCategoryById = async (req, res) => {
+  try {
+    const category = await CategoryService.getCategoryById(req.params.id);
+    res.json(category);
+  } catch (error) {
+    res.status(404).json({ message: 'Erro ao buscar categoria', error: error.message });
+  }
+};
+
 module.exports = { createCategory, getAllCategories };

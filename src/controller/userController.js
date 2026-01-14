@@ -27,4 +27,22 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { createUser, getAllUsers };
+const resetPassword = async (req, res) => {
+  try {
+    const user = await UserService.resetPassword(req.params.id, req.body.password);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao resetar senha', error: error.message });
+  }
+};
+
+const changeName = async (req, res) => {
+  try {
+    const user = await UserService.changeName(req.params.id, req.body.name);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao mudar nome', error: error.message });
+  }
+};
+
+module.exports = { createUser, getAllUsers, resetPassword, changeName };

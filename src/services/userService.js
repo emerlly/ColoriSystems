@@ -35,6 +35,28 @@ class UserService {
   async findAll() {
     return User.find({ active: true }).sort({ name: 1 });
   }
+
+  // resetarar senha do usuário
+  async resetPassword(id, newPassword) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.password = newPassword;
+    await user.save();
+    return user;
+  }
+
+  // mudar nome do usuário
+  async changeName(id, newName) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.name = newName;
+    await user.save();
+    return user;
+  }
 }
 
 module.exports = new UserService();
