@@ -18,4 +18,38 @@ const getAllCustomers = async (req, res) => {
   }
 };
 
+// reset senha
+const resetPassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    const customer = await Customer.resetPassword(id, newPassword);
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(400).json({ message: 'Erro ao resetar senha', error: error.message });
+  }
+}
+
+// reset name
+const resetName = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newName } = req.body;
+    const customer = await Customer.resetName(id, newName);
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(400).json({ message: 'Erro ao resetar nome', error: error.message });
+  }
+}
+
+// desativar cliente
+const deactivateCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const customer = await Customer.deactivateCustomer(id);
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(400).json({ message: 'Erro ao desativar cliente', error: error.message });
+  }
+}
 module.exports = { createCustomer, getAllCustomers };

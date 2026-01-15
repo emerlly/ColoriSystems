@@ -34,6 +34,39 @@ class CustomerService {
   async findAll() {
     return Customer.find({ active: true }).sort({ name: 1 });
   }
+
+  //reset senha
+  async resetPassword(id, newPassword) {
+    const customer = await Customer.findById(id);
+    if (!customer) {
+      throw new Error('Customer not found');
+    }
+    customer.password = newPassword;
+    await customer.save();
+    return customer;
+  }
+
+  // reset name
+  async resetName(id, newName) {
+    const customer = await Customer.findById(id);
+    if (!customer) {
+      throw new Error('Customer not found');
+    }
+    customer.name = newName;
+    await customer.save();
+    return customer;
+  }
+
+  // desativar cliente
+  async deactivateCustomer(id) {
+    const customer = await Customer.findById(id);
+    if (!customer) {
+      throw new Error('Customer not found');
+    }
+    customer.active = false;
+    await customer.save();
+    return customer;
+  }
 }
 
 module.exports = new CustomerService();
