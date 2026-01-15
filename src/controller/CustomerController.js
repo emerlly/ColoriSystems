@@ -52,4 +52,10 @@ const deactivateCustomer = async (req, res) => {
     res.status(400).json({ message: 'Erro ao desativar cliente', error: error.message });
   }
 }
-module.exports = { createCustomer, getAllCustomers };
+module.exports = { 
+  createCustomer, 
+  getAllCustomers,
+  resetPassword,
+  resetName,
+  deactivateCustomer
+ };

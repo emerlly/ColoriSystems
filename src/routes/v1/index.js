@@ -1,6 +1,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @openapi
+ * /users/{id}/reset-password:
+ *   patch:
+ *     summary: Redefine a senha do usuário
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: "NovaSenha@123"
+ *     responses:
+ *       200:
+ *         description: Senha alterada com sucesso
+ *       404:
+ *         description: Usuário não encontrado
+ */
+
+
+
+
+
 router.use('/auth', require('./auth.routes'));
 router.use('/products', require('./products.routes'));
 router.use('/categories', require('./category.routes'));

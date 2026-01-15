@@ -57,6 +57,17 @@ class UserService {
     await user.save();
     return user;
   }
+
+  //desativar usuário
+  async deactivateUser(id) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    user.active = false;
+    await user.save();
+    return user;
+  }
 }
 
 module.exports = new UserService();

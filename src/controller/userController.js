@@ -43,6 +43,22 @@ const changeName = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Erro ao mudar nome', error: error.message });
   }
+}
+// desativar usuário
+const deactivateUser = async (req, res) => {
+  try {
+    const user = await UserService.deactivateUser(req.params.id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao desativar usuário', error: error.message });
+  }
+
 };
 
-module.exports = { createUser, getAllUsers, resetPassword, changeName };
+module.exports = {
+  createUser,
+  getAllUsers,
+  resetPassword,
+  changeName,
+  deactivateUser
+};
