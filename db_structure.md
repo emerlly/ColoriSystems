@@ -5,7 +5,7 @@
 - `email`: String (unique)
 - `password`: String (hashed)
 -`CPF`: String (unique)
-- `role`: Enum ['admin', 'operator', 'stockist', 'manager']
+- `role`: Enum ['admin', 'operator', 'stockist', 'manager', 'customer']
 - `active`: Boolean
 
 ## 2. Categorias (Categories)

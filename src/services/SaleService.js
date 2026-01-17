@@ -13,21 +13,13 @@ class SaleService {
 
     let totalValue = 0;
 
-    // 🔍 validar estoque e calcular totais
+    // Validar produtos e calcular total
     for (const item of items) {
       const product = await Product.findById(item.product);
 
-      if (!product) {
-        throw new Error('Produto não encontrado');
-      }
-
-      if (!product.active) {
-        throw new Error(`Produto ${product.name} está inativo`);
-      }
-
-      if (product.stockQuantity < item.quantity) {
-        throw new Error(`Estoque insuficiente para ${product.name}`);
-      }
+      if (!product) throw new Error('Produto não encontrado');
+      if (!product.active) throw new Error(`Produto ${product.name} está inativo`);
+      if (product.stockQuantity < item.quantity) throw new Error(`Estoque insuficiente para ${product.name}`);
 
       item.unitPrice = product.salePrice;
       item.totalPrice = product.salePrice * item.quantity;
@@ -35,17 +27,30 @@ class SaleService {
       totalValue += item.totalPrice;
     }
 
-    // 💾 registrar venda
+    // Criar venda
     const sale = await Sale.create({
       customer,
       items,
       totalValue,
       paymentMethod,
       seller: userId,
-      notes
+      notes,
+      payment: {
+        method: enun['cash', 'credit_card', 'debit_card', 'pix'].includes(paymentMethod) ? paymentMethod : 'other',
+        status: 'pending'
+      }
     });
 
-    // 📦 registrar movimentação de saída
+    //chamar mercado pago
+    sale.payment.transactionId = PaymentResponse.id;
+    sale.payment.ticketUrl = PaymentResponse,point_of_interaction?.transaction_data?.ticket_url;
+    sale.payment.qrcode  = PaymentResponse.point_of_interaction?.transaction_data?.qr_code;
+    sale.payment.status = PaymentResponse.status || 'pending';
+
+    await sale.save();
+
+    
+    // Registrar saída de estoque
     for (const item of items) {
       await StockService.registerMovement(
         {
@@ -53,8 +58,8 @@ class SaleService {
           product: item.product,
           quantity: item.quantity,
           customer,
-          paymentMethod,
           unitPrice: item.unitPrice,
+          paymentMethod,
           notes: `Venda ID ${sale._id}`
         },
         userId
@@ -82,7 +87,6 @@ class SaleService {
 
     return sale;
   }
-
 }
 
 module.exports = new SaleService();
