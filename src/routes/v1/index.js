@@ -33,10 +33,6 @@ const router = express.Router();
  *         description: Usuário não encontrado
  */
 
-
-
-
-
 router.use('/auth', require('./auth.routes'));
 router.use('/products', require('./products.routes'));
 router.use('/categories', require('./category.routes'));
@@ -46,5 +42,7 @@ router.use('/stock', require('./stock.routes'));
 router.use('/reports', require('./report.routes'));
 router.use('/health', require('./health.routes'));
 router.use('/users', require('./user.routes'));
+router.use('/sales', require('./sale.routes'));
+router.use('/quotes', require('./quote.routes'));
 
 module.exports = router;

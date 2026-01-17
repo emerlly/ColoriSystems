@@ -62,7 +62,7 @@ const stockMovementSchema = new mongoose.Schema(
   }
 );
 
-// 📊 Índices para performance de relatórios
+// Índices para performance de relatórios
 stockMovementSchema.index({ type: 1 });
 stockMovementSchema.index({ createdAt: -1 });
 stockMovementSchema.index({ product: 1, createdAt: -1 });
