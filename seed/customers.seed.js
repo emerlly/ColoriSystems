@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 const mongoose = require('mongoose');
 const Customer = require('../src/models/CustomerModel');
 
@@ -8,8 +8,8 @@ async function run() {
   await Customer.deleteMany();
 
   await Customer.create([
-    { name: 'Cliente 1', cpf: '11111111111', phone: '11999991111', email: 'cliente1@example.com' },
-    { name: 'Cliente 2', cpf: '22222222222', phone: '11999992222', email: 'cliente2@example.com' }
+    { name: 'Cliente 1', document: '11111111111', documentType: 'CPF', phone: '11999991111', email: 'cliente1@example.com' },
+    { name: 'Cliente 2', document: '22222222222', documentType: 'CPF', phone: '11999992222', email: 'cliente2@example.com' }
   ]);
 
   console.log('Seed de clientes criado');
