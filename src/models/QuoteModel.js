@@ -12,7 +12,7 @@ const quoteSchema = new mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: 'Products',
           required: true
         },
         quantity: { type: Number, required: true },
@@ -31,7 +31,7 @@ const quoteSchema = new mongoose.Schema(
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Users',
       required: true
     },
 

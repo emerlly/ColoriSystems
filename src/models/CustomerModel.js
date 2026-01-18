@@ -7,12 +7,16 @@ const CustomerSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
-
-    cnpj: {
+    document: {
       type: String,
       required: true,
-      unique: true, // já cria índice único
+      unique: true,
       index: true
+    },
+    documentType: {
+      type: String,
+      required: true,
+      enum: ['CPF', 'CNPJ']
     },
 
     phone: {
