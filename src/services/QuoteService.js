@@ -1,6 +1,6 @@
 const Quote = require('../models/QuoteModel');
 const Product = require('../models/ProductModel');
-const StockMovement = require('../models/StocktModel');
+const StockMovement = require('../models/StockModel');
 
 class QuoteService {
 

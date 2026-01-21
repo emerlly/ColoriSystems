@@ -1,5 +1,5 @@
 
-require('dotenv').config();
+require('dotenv').config({path: '../.env'});
 const app = require('./app');
 const { connectToDatabase } = require('./models/ConnectionModel');
 

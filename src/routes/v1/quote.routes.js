@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const QuoteController = require('../controller/QuoteController');
-const { auth, authorize } = require('../middlewares/authMiddleware');
+const QuoteController = require('../../controller/QuoteController');
+const { auth, authorize } = require('../../middlewares/authMiddleware');
 
 router.use(auth);
 

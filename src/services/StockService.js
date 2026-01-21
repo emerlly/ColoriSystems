@@ -110,6 +110,51 @@ class StockService {
       .populate('customer', 'name')
       .sort({ createdAt: -1 });
   }
+
+  async salesBySeller(startDate, endDate) {
+    return StockMovement.aggregate([
+      {
+        $match: {
+          type: 'out',
+          createdAt: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$user',
+          totalSales: { 
+            $sum: { 
+              $multiply: 
+              ['$quantity', '$unitPrice'] 
+            } 
+          }
+        }
+      },
+      {
+        $lookup:{
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'seller'
+        }
+      },
+      {
+        $unwind: '$seller'
+      },{
+        $project: {
+          _id: 0,
+          sellerName: '$seller.name',
+          role: '$seller.role',
+          totalItensSold: 1,
+          totalValueSold: 1
+        }
+      }
+      
+    ])
+  }
 }
 
 module.exports = new StockService();

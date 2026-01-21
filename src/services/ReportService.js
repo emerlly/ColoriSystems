@@ -156,7 +156,7 @@ class ReportService {
 
     return workbook;
   }
-  async salesBySaller(startDate, endDate) {
+  async salesBySeller(startDate, endDate) {
     return StockMovement.aggregate([
       {
         $match:{

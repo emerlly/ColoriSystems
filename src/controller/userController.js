@@ -38,6 +38,7 @@ const resetPassword = async (req, res) => {
 
 const changeName = async (req, res) => {
   try {
+    console.log('id', req.params.id);
     const user = await UserService.changeName(req.params.id, req.body.name);
     res.status(200).json(user);
   } catch (error) {

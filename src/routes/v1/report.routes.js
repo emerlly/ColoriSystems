@@ -10,6 +10,6 @@ router.get('/sales', authorize(['admin', 'manager']), ReportController.getSalesR
 router.get('/low-stock', authorize(['admin', 'manager', 'stockist']), ReportController.getLowStockReport);
 router.get('/export-excel', authorize(['admin', 'manager']), ReportController.exportToExcel);
 router.get('/salles-by-seller', authorize(['admin', 'manager']), ReportController.salesBySeller);
-
+router.get('/seller', authorize(['admin', 'manager']), ReportController.getSalesReport);
 
 module.exports = router;

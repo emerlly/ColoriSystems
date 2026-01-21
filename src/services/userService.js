@@ -53,6 +53,7 @@ class UserService {
     if (!user) {
       throw new Error('User not found');
     }
+    console.log('id service', id);
     user.name = newName;
     await user.save();
     return user;

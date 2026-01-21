@@ -88,19 +88,14 @@ const exportToExcel = async (req, res) => {
 const salesBySeller = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-
-    if (!startDate || !endDate) {
-      return res.status(400).json({
-        message: 'startDate e endDate são obrigatórios'
-      });
-      const report = await ReportService.salesBySeller(startDate, endDate);
-      res.json(report);
-    }
-
+    const result = await ReportService.salesBySeller(startDate, endDate);
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
+
 
 module.exports = {
   getSalesReport,
