@@ -11,5 +11,6 @@ router.get('/low-stock', authorize(['admin', 'manager', 'stockist']), ReportCont
 router.get('/export-excel', authorize(['admin', 'manager']), ReportController.exportToExcel);
 router.get('/sales-by-seller', authorize(['admin', 'manager']), ReportController.salesBySeller);
 router.get('/seller', authorize(['admin', 'manager']), ReportController.getSalesReport);
+router.get('/sales-by-period', authorize(['admin', 'manager']), ReportController.salesByPeriod);
 
 module.exports = router;

@@ -95,6 +95,15 @@ const salesBySeller = async (req, res) => {
   }
 };
 
+const salesByPeriod = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    const result = await ReportService.salesByPeriod(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 module.exports = {
@@ -102,5 +111,6 @@ module.exports = {
   getLowStockReport,
   getProfitReport,
   exportToExcel,
-  salesBySeller
+  salesBySeller,
+  salesByPeriod
 };

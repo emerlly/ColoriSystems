@@ -5,7 +5,7 @@ const User = require('../src/models/UserModel');
 async function run() {
   await mongoose.connect(process.env.DATABASE_URL);
 
-  const password = await bcrypt.hash('123456', 10);
+  const password = '123456'
 
   await User.deleteMany();
 

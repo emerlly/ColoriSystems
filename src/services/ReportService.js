@@ -5,27 +5,43 @@ const StockMovement = require('../models/StockModel');
 class ReportService {
 
   async salesByPeriod(startDate, endDate) {
-    return StockMovement.aggregate([
-      {
-        $match: {
-          type: 'out',
-          createdAt: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate)
-          }
-        }
+  const result = await StockMovement.aggregate([
+    {
+      $match: {
+        type: "out",
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
       },
-      {
-        $group: {
-          _id: null,
-          totalSales: {
-            $sum: { $multiply: ['$quantity', '$unitPrice'] }
-          },
-          totalItemsSold: { $sum: '$quantity' }
-        }
-      }
-    ]);
-  }
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        totalSales: {
+          $sum: { $multiply: ["$quantity", "$unitPrice"] },
+        },
+        totalItemsSold: { $sum: "$quantity" },
+      },
+    },
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+      },
+    },
+  ]);
+
+  // transformar para o formato que o gráfico espera
+  return result.map((item) => ({
+    period: `${String(item._id.month).padStart(2, "0")}/${item._id.year}`,
+    total: item.totalItemsSold, // pode trocar para totalSales se quiser faturamento
+  }));
+}
+
 
   async salesByProduct(startDate, endDate) {
     return StockMovement.aggregate([
