@@ -4,16 +4,18 @@ const mongoose = require("mongoose");
 async function run() {
     console.log('url:', process.env.DATABASE_URL);
     try {
+
+        
         await mongoose.connect(process.env.DATABASE_URL);
         console.log(' Conectado no MongoDB');
 
+        const db = mongoose.connection.db;
         const collections = await db.listCollections({ name: "orders" }).toArray();
 
         if (collections.length) {
             console.log("Collection 'orders' já existe.");
             return process.exit();
         }
-
         // cria collection
         await db.createCollection("orders");
         console.log("Collection 'orders' criada.");
