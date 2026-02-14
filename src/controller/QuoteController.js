@@ -16,7 +16,7 @@ class QuoteController {
       const data = await QuoteService.getAllQuotes();
       res.json(data);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: 'Erro ao buscar orçamentos', error: error.message });
     }
   }
 

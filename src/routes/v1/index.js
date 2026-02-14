@@ -44,5 +44,6 @@ router.use('/health', require('./health.routes'));
 router.use('/users', require('./user.routes'));
 router.use('/sales', require('./sale.routes'));
 router.use('/quotes', require('./quote.routes'));
+router.use('/orders', require('./order.routes'));
 
 module.exports = router;

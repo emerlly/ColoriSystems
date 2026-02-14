@@ -1,0 +1,44 @@
+const orderService = require("../services/orderService");
+
+class OrderController {
+  async create(req, res) {
+    try {
+      const order = await orderService.create(req.body);
+      res.status(201).json(order);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getAll(req, res) {
+    try {
+      const orders = await orderService.getAll();
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getById(req, res) {
+    try {
+      const order = await orderService.getById(req.params.id);
+      res.json(order);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
+  }
+
+  async updateStatus(req, res) {
+    try {
+      const order = await orderService.updateStatus(
+        req.params.id,
+        req.body.situacao
+      );
+      res.json(order);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+}
+
+module.exports = new OrderController();
