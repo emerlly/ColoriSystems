@@ -9,4 +9,5 @@ router.get("/sales-by-period", controller.salesByPeriod);
 router.get("/top-products", controller.topProducts);
 router.get("/alerts", controller.alerts);
 
+
 module.exports = router;

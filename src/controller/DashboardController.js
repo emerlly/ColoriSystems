@@ -3,7 +3,7 @@ const dashboardService = require('../services/DashboardService');
 class DashboardController {
   async summary(req, res) {
     try {
-  
+
       const { startDate, endDate } = req.query;
       const company = req.companyId;
 
@@ -29,7 +29,6 @@ class DashboardController {
         startDate,
         endDate
       );
-
       res.json(data);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -54,6 +53,21 @@ class DashboardController {
     }
   }
 
+  async profitByPeriod(req, res) {
+    try {
+      const { startDate, endDate } = req.query;
+      const company = req.companyId;
+      const data = await dashboardService.profitByPeriod(
+        company,
+        startDate,
+        endDate
+      );
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+
   async alerts(req, res) {
     try {
       const companyId = req.companyId;
@@ -64,7 +78,7 @@ class DashboardController {
     }
   }
 
-  
+
 }
 
 module.exports = new DashboardController();

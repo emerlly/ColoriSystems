@@ -137,6 +137,8 @@ class DashboardService {
 
         await this.setCache(companyId, "salesByPeriod", startDate, endDate, data);
 
+        console.log("Sales by period data:", data);
+        
         return data;
     }
 
@@ -182,6 +184,69 @@ class DashboardService {
         ]);
     }
 
+    async profitByPeriod(companyId, startDate, endDate) {
+        const data = await Sale.aggregate([
+            {
+                $match: {
+                    companyId,
+                    status: { $in: VALID_STATUS },
+                    createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+                },
+            },
+
+            // quebra cada item da venda
+            { $unwind: "$items" },
+
+            // busca o produto
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product",
+                    foreignField: "_id",
+                    as: "product",
+                },
+            },
+
+            { $unwind: "$product" },
+
+            // calcula lucro unitário
+            {
+                $project: {
+                    totalValue: 1,
+                    quantity: "$items.quantity",
+                    salePrice: "$items.unitPrice",
+                    costPrice: "$product.costPrice",
+                    itemProfit: {
+                        $multiply: [
+                            { $subtract: ["$items.unitPrice", "$product.costPrice"] },
+                            "$items.quantity",
+                        ],
+                    },
+                },
+            },
+
+            {
+                $group: {
+                    _id: "$_id", // agrupa por venda
+                    revenue: { $first: "$totalValue" },
+                    profit: { $sum: "$itemProfit" },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    revenue: { $sum: "$revenue" },
+                    profit: { $sum: "$profit" },
+                    salesCount: { $sum: 1 },
+                },
+            }
+            ,
+        ]);
+        return data[0] || { revenue: 0, profit: 0, salesCount: 0 };
+
+
+
+    }
     // =====================================================
     // ALERTAS
     // =====================================================
