@@ -20,6 +20,12 @@ const quoteSchema = new mongoose.Schema(
         totalPrice: { type: Number, required: true }
       }
     ],
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CompanyId',
+      required: true //setado como null para permitir cotações sem company, caso necessário, 
+      // alterar para 'required: true' quando for obrigatório associar uma cotação a um company
+    },
 
     totalValue: { type: Number, required: true },
 
@@ -40,4 +46,6 @@ const quoteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Quote', quoteSchema);
+const Quote = mongoose.model('Quote', quoteSchema);
+
+module.exports = Quote

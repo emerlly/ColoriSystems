@@ -13,54 +13,83 @@ const STATUS_FLOW = [
 
 class OrderService {
   
-  async create({ customerId, items }) {
-    const customer = await Custmers.findById(customerId);
+  async create({ customerId, items, status, companyId }) {
 
-    console.log("Customer:", customer);
-    
+    if (!company) throw new Error("Empresa não informada");
+ 
+    const customer = await Custmers.findOne({
+      _id: customerId,
+      company: company
+    });
+
     if (!customer) throw new Error("Cliente não encontrado");
-
     if (!items?.length) throw new Error("Pedido sem itens");
 
     let valorTotal = 0;
     const processedItems = [];
 
     for (const item of items) {
-      const product = await Product.findById(item.productId);
+      const product = await Product.findOne({
+        _id: item.productId,
+        company: company
+      });
+
       if (!product) throw new Error("Produto não encontrado");
 
-      const subtotal = item.quantidade * product.price;
+      const quantity = Number(item.quantity);
+      if (!quantity || quantity <= 0) {
+        throw new Error("Quantidade inválida");
+      }
+
+      const unitPrice = Number(product.salePrice);
+      if (isNaN(unitPrice)) {
+        throw new Error("Produto com preço inválido");
+      }
+
+      const subtotal = quantity * unitPrice;
       valorTotal += subtotal;
 
       processedItems.push({
         product: product._id,
-        quantidade: item.quantidade,
-        precoUnitario: product.price,
-        subtotal,
+        quantity,
+        unitPrice,
+        total: subtotal,
+        company
       });
     }
 
+    const finalStatus = status || "PENDENTE";
+
+    if (!status.includes(finalStatus)) {
+      throw new Error("Status inválido");
+    }
+
     const order = await Order.create({
+      company: company,
       customer: customer._id,
       items: processedItems,
       totalOrder: valorTotal,
-      status: "PENDENTE",
+      status: finalStatus,
     });
 
     return order;
   }
 
 
-  async getAll() {
-    return Order.find()
+
+  async getAll(companyId) {
+    return Order.find({ companyId: companyId })
       .populate("customer")
       .populate("items.product")
       .sort({ createdAt: -1 });
   }
 
- 
-  async getById(id) {
-    const order = await Order.findById(id)
+
+  async getById(id, companyId) {
+    const order = await Order.findOne({
+      _id: id,
+      companyId: companyId
+    })
       .populate("customer")
       .populate("items.product");
 
@@ -69,11 +98,15 @@ class OrderService {
   }
 
 
-  async updateStatus(id, newStatus) {
-    const order = await Order.findById(id);
+  async updateStatus(id, newStatus, company) {
+    const order = await Order.findOne({
+      _id: id,
+      companyId: companyId
+    });
+
     if (!order) throw new Error("Pedido não encontrado");
 
-    const currentIndex = STATUS_FLOW.indexOf(order.situacao);
+    const currentIndex = STATUS_FLOW.indexOf(order.status);
     const newIndex = STATUS_FLOW.indexOf(newStatus);
 
     if (newIndex === -1) throw new Error("Status inválido");
@@ -83,16 +116,17 @@ class OrderService {
       throw new Error("Não é permitido voltar o status do pedido");
     }
 
-    order.situacao = newStatus;
+    order.status = newStatus;
     await order.save();
 
     if (newStatus === "SEPARANDO") {
       for (const item of order.items) {
         await StockMovement.create({
+          companyId: company,
           type: "out",
           product: item.product,
-          quantity: item.quantidade,
-          unitPrice: item.precoUnitario,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
         });
       }
     }

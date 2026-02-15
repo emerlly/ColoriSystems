@@ -45,5 +45,6 @@ router.use('/users', require('./user.routes'));
 router.use('/sales', require('./sale.routes'));
 router.use('/quotes', require('./quote.routes'));
 router.use('/orders', require('./order.routes'));
+router.use('/dashboard', require('./dashboard.routes'));
 
 module.exports = router;

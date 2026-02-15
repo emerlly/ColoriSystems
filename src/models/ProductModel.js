@@ -56,6 +56,12 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       index: true
+    },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CompanyId',
+      required: true //setado como null para permitir produtos sem company, caso necessário, 
+      // alterar para 'required: true' quando for obrigatório associar um produto a um company
     }
   },
   { timestamps: true }

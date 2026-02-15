@@ -2,8 +2,12 @@ const orderService = require("../services/orderService");
 
 class OrderController {
   async create(req, res) {
+  
     try {
-      const order = await orderService.create(req.body);
+      const order = await orderService.create({
+        ...req.body,
+        companyId: req.companyId,
+      });
       res.status(201).json(order);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -11,11 +15,12 @@ class OrderController {
   }
 
   async getAll(req, res) {
+    console.log('req.companyId', req.companyId);
     try {
-      const orders = await orderService.getAll();
+      const orders = await orderService.getAll(req.companyId);
       res.json(orders);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 

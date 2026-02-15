@@ -55,6 +55,12 @@ const stockMovementSchema = new mongoose.Schema(
 
     notes: {
       type: String
+    },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CompanyId',
+      required: true //setado como null para permitir movimentações de estoque sem company, caso necessário, 
+      // alterar para 'required: true' quando for obrigatório associar uma movimentação de estoque a um company
     }
   },
   {

@@ -35,14 +35,19 @@ const CustomerSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    company: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Company",
-      required: true
+    createdAt: {
+      type: Date,
+      default: Date.now
     },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CompanyId',
+      required: true //setado como null para permitir clientes sem company, caso necessário, 
+      // alterar para 'required: true' quando for obrigatório associar um cliente a um company
+    }
   },
   { timestamps: true },
 
 );
-
-module.exports = mongoose.model('Customer', CustomerSchema);
+const Customer = mongoose.model('Customer', CustomerSchema);
+module.exports = Customer;

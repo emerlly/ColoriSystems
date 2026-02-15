@@ -10,13 +10,15 @@ const auth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('+active +role +company');
 
     if (!user || !user.active) {
-      return res.status(401).json({ message: 'Usuário não encontrado ou inativo.' });
+      return res.status(401).json({ message: 'Usuário não encontrado ou inativo.', user });
     }
-
+    
     req.user = user;
+    req.companyId = user.companyId; 
+
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token inválido.' });

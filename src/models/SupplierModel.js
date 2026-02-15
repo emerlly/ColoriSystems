@@ -43,6 +43,12 @@ const supplierSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       index: true
+    },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CompanyId',
+      required: true //setado como null para permitir fornecedores sem company, caso necessário, 
+      // alterar para 'required: true' quando for obrigatório associar um fornecedor a um company
     }
   },
   { timestamps: true }

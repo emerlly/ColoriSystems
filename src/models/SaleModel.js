@@ -18,8 +18,15 @@ const saleSchema = new mongoose.Schema({
       quantity: { type: Number, required: true },
       unitPrice: { type: Number, required: true },
       totalPrice: { type: Number, required: true }
-    }
+    },
+
   ],
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CompanyId',
+    required: true //setado como null para permitir vendas sem company, caso necessário, 
+    // alterar para 'required: true' quando for obrigatório associar uma venda a um company
+  },
 
   totalValue: {
     type: Number,
@@ -38,15 +45,15 @@ const saleSchema = new mongoose.Schema({
     default: 'pending'
   },
   transactionId: String,
-  
+
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  quote: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Quote' 
+  quote: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quote'
   },
 
   notes: String
