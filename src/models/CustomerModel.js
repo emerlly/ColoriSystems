@@ -41,7 +41,7 @@ const CustomerSchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir clientes sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar um cliente a um company
     }
@@ -49,5 +49,5 @@ const CustomerSchema = new mongoose.Schema(
   { timestamps: true },
 
 );
-const Customer = mongoose.model('Customer', CustomerSchema);
+const Customer = mongoose.model('customer', CustomerSchema);
 module.exports = Customer;

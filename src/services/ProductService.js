@@ -1,14 +1,20 @@
+
 const Product = require('../models/ProductModel');
 
 class ProductService {
   // Buscar todos os produtos
-  async findAll() {
-    return Product.find().populate('category');
+  async findAll(companyId) {
+    return Product.find({ companyId })
+    .populate('category')
+    .populate('supplier'); // Popula apenas o nome do fornecedor
   }
 
   // Buscar produto por ID
   async findById(id) {
-    const product = await Product.findById(id).populate('category');
+    const product = await Product.findById(id)
+    .populate('category')
+    .populate('supplier');
+
     if (!product) {
       throw new Error('Produto não encontrado');
     }
@@ -21,9 +27,25 @@ class ProductService {
     if (data.salePrice < data.costPrice) {
       throw new Error('Preço de venda não pode ser menor que o custo');
     }
+    const category = await category.findOne({
+      _id: data.categoryId,
+      companyId: data.companyId,
+    });
 
-    const product = await Product.create(data);
-    return product;
+    if (!category) {
+      throw new Error('Categoria não encontrada para esta empresa');
+    }
+
+    const supplier = await supplier.findOne({
+      _id: data.supplierId,
+      companyId: data.companyId,
+    });
+    if (!supplier) {
+      throw new Error('Fornecedor não encontrado para esta empresa');
+    }
+
+    return await Product.create(data);
+  
   }
 
   // Atualizar produto

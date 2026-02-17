@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const orderItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: "product",
     required: true,
   },
   quantity: {
@@ -24,18 +24,13 @@ const orderItemSchema = new mongoose.Schema({
     enum: ["pendente", "separando", "produzindo", "enviado", "entregue"],
     default: "pendente",
   },
-  company: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Company',
-    required: true //setado como null para permitir itens de pedido sem company, caso necessário,
-  }
 });
 
 const orderSchema = new mongoose.Schema(
   {
     customer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+      ref: "customer",
       required: true,
     },
 
@@ -53,7 +48,7 @@ const orderSchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir pedidos sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar um pedido a um company
     }
@@ -61,6 +56,6 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("order", orderSchema);
 
 module.exports = Order

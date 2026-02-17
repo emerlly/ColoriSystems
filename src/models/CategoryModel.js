@@ -20,7 +20,7 @@ const categorySchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir categorias sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar uma categoria a um company
     }
@@ -31,6 +31,6 @@ const categorySchema = new mongoose.Schema(
 
 categorySchema.index({ name: 1 }, { unique: true });
 
-const Category = mongoose.model('Category', categorySchema);
+const Category = mongoose.model('category', categorySchema);
 
 module.exports = Category;

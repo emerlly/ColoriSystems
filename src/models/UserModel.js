@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyID',
+      ref: 'companyId',
       required: true //setado como null para permitir usuários sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar um usuário a um company
     }
@@ -65,6 +65,6 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('users', userSchema);
 
 module.exports = User;

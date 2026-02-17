@@ -10,6 +10,12 @@ const productSchema = new mongoose.Schema(
       uppercase: true,
       index: true
     },
+    SKU:{
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true
+    },
 
     name: {
       type: String,
@@ -23,7 +29,7 @@ const productSchema = new mongoose.Schema(
 
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
+      ref: 'category',
       required: true,
       index: true
     },
@@ -59,9 +65,15 @@ const productSchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir produtos sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar um produto a um company
+    },
+    supplier:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'supplier',
+      index: true,
+      required: true
     }
   },
   { timestamps: true }
@@ -71,6 +83,6 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ name: 1 });
 productSchema.index({ category: 1, active: 1 });
 
-const Product = mongoose.model('Product', productSchema);
+const Product = mongoose.model('product', productSchema);
 
 module.exports = Product;

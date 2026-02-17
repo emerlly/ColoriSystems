@@ -73,7 +73,7 @@ class SaleService {
     return Sale.find()
       .populate('customer', 'name cpf')
       .populate('items.product', 'name code')
-      .populate('seller', 'name role')
+      .populate('seller', 'name')
       .sort({ createdAt: -1 });
   }
 

@@ -4,7 +4,7 @@ const saleSchema = new mongoose.Schema({
 
   customer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
+    ref: 'customer',
     required: true
   },
 
@@ -12,7 +12,7 @@ const saleSchema = new mongoose.Schema({
     {
       product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+        ref: 'product',
         required: true
       },
       quantity: { type: Number, required: true },
@@ -23,7 +23,7 @@ const saleSchema = new mongoose.Schema({
   ],
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'CompanyId',
+    ref: 'companyId',
     required: true //setado como null para permitir vendas sem company, caso necessário, 
     // alterar para 'required: true' quando for obrigatório associar uma venda a um company
   },
@@ -48,12 +48,12 @@ const saleSchema = new mongoose.Schema({
 
   seller: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'users',
     required: true
   },
   quote: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Quote'
+    ref: 'quote'
   },
 
   notes: String
@@ -62,4 +62,4 @@ const saleSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('Sale', saleSchema);
+module.exports = mongoose.model('sale', saleSchema);

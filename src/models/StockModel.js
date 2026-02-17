@@ -10,7 +10,7 @@ const stockMovementSchema = new mongoose.Schema(
 
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'product',
       required: true,
       index: true
     },
@@ -28,13 +28,13 @@ const stockMovementSchema = new mongoose.Schema(
 
     supplier: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Supplier',
+      ref: 'supplier',
       index: true
     },
 
     customer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Customer',
+      ref: 'customer',
       index: true
     },
 
@@ -48,7 +48,7 @@ const stockMovementSchema = new mongoose.Schema(
 
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'user',
       required: true,
       index: true
     },
@@ -58,7 +58,7 @@ const stockMovementSchema = new mongoose.Schema(
     },
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir movimentações de estoque sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar uma movimentação de estoque a um company
     }
@@ -73,6 +73,6 @@ stockMovementSchema.index({ type: 1 });
 stockMovementSchema.index({ createdAt: -1 });
 stockMovementSchema.index({ product: 1, createdAt: -1 });
 
-const StockMovement = mongoose.model('StockMovement', stockMovementSchema);
+const StockMovement = mongoose.model('stockMovement', stockMovementSchema);
 
 module.exports = StockMovement;

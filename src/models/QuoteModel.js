@@ -4,7 +4,7 @@ const quoteSchema = new mongoose.Schema(
   {
     customer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Customer',
+      ref: 'customer',
       required: true
     },
 
@@ -12,7 +12,7 @@ const quoteSchema = new mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Products',
+          ref: 'product',
           required: true
         },
         quantity: { type: Number, required: true },
@@ -22,7 +22,7 @@ const quoteSchema = new mongoose.Schema(
     ],
     companyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'CompanyId',
+      ref: 'companyId',
       required: true //setado como null para permitir cotações sem company, caso necessário, 
       // alterar para 'required: true' quando for obrigatório associar uma cotação a um company
     },
@@ -37,7 +37,7 @@ const quoteSchema = new mongoose.Schema(
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Users',
+      ref: 'user',
       required: true
     },
 
@@ -46,6 +46,6 @@ const quoteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Quote = mongoose.model('Quote', quoteSchema);
+const Quote = mongoose.model('quote', quoteSchema);
 
 module.exports = Quote

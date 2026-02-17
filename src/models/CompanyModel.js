@@ -9,5 +9,5 @@ const companySchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
-const Company = mongoose.model('CompanyId', companySchema);
+const Company = mongoose.model('companyId', companySchema);
 module.exports = Company;

@@ -12,8 +12,6 @@ async function run() {
 
   await Quote.deleteMany();
 
-  console.log('saporra', product, customer);
-
   await Quote.create({
     customer: customer._id,
     items: [
