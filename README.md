@@ -119,7 +119,7 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 1.  **Clone o repositório** (se aplicável, ou descompacte o arquivo):
 
     ```bash
-    git clone <github.com/emerlly/ColoriSystems>
+    git clone github.com/emerlly/ColoriSystems.git
     cd ColoriSystems
     ```
 
@@ -157,25 +157,324 @@ npm start
 
 O servidor estará disponível em `http://localhost:3000/api` (ou na porta configurada no `.env`).
 
-## Endpoints da API (Exemplos)
+# Seeds
 
-Alguns exemplos de endpoints disponíveis:
+### seed/admin.seed.js  
+Script para criar usuário administrador. Conecta ao MongoDB, verifica existência do admin e, se ausente, insere um usuário com papel `admin`.  
+- Conexão: `mongoose.connect(process.env.DATABASE_URL)`  
+- Verificação: `User.findOne({ email: 'admin@admin.com' })`  
+- Criação: `User.create({ name, cpf, email, password, role, active })`  
 
-*   `POST /api/auth/register`: Registrar um novo usuário.
-*   `POST /api/auth/login`: Autenticar um usuário e obter um token JWT.
-*   `GET /api/products`: Listar todos os produtos.
-*   `POST /api/products`: Criar um novo produto (requer autenticação e autorização).
-*   `GET /api/reports/sales-by-period?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`: Gerar relatório de vendas por período.
-*   `GET /api/users`: Listar todos os usuários (requer autenticação e autorização de administrador).
+```js
+// Trecho principal
+const exists = await User.findOne({ email: 'admin@admin.com' });
+if (!exists) {
+  await User.create({
+    name: 'userName',
+    cpf: '0000000000',
+    email: 'admin@admin.com',
+    password: '123456',
+    role: 'admin',
+    active: true
+  });
+}
+```
 
-Para uma lista completa e detalhada dos endpoints, consulte a documentação do Swagger (se ativada e configurada).
+### seed/users.seed.js  
+Popula usuários de teste (`seller`, `operator`, `customer`).  
+- Hash de senha via **bcryptjs**  
+- Insere múltiplos documentos em `users`  
 
-## Contribuição
+```js
+await User.deleteMany();
+await User.create([
+  { name: 'Vendedor', email: 'seller@colori.com', password, role: 'seller', cpf: '98765432100' },
+  { name: 'Operador', email: 'operator@colori.com', password, role: 'operator', cpf: '45678912300' },
+  { name: 'Customer', email: 'customer@colori.com', password, role: 'customer', cpf: '12345678900' }
+]);
+```
 
-Para contribuir com o projeto, siga as boas práticas de desenvolvimento, crie branches para novas funcionalidades ou correções e envie Pull Requests.
+### seed/categories.seed.js  
+Cria categorias iniciais (Xícaras, Copos, Garrafas).  
+- Remove todas antes de inserir  
+- Model: `CategoryModel`  
 
+### seed/suppliers.seed.js  
+Registra três fornecedores de exemplo com CNPJ.  
+
+### seed/customers.seed.js  
+Insere dois clientes com CPF.  
+
+### seed/products.seed.js  
+Popula produtos vinculados a categorias já criadas.  
+- Busca categorias existentes  
+- Insere produto com preço de venda, custo e estoque  
+
+### seed/stock.seed.js  
+Gera movimentação de saída em estoque com base em uma venda.  
+- Usa modelos `SaleModel` e `ProductModel`  
+
+### seed/sales.seed.js  
+Cria venda a partir de um orçamento (`QuoteModel`).  
+
+### seed/budgets.seed.js  
+Gera orçamento inicial:  
+- Busca produto e cliente por ID  
+- Insere orçamento com itens e valor total  
+
+### seed/order.seed.js  
+[Em branco/placeholder] possivelmente para pedidos futuros.  
+
+### seed/index.js  
+Orquestra execução de todos os scripts acima em sequência.  
 
 ---
+
+# Configurações
+
+### src/config/mercadopago.js  
+Configura o SDK de MercadoPago com o token de acesso via variável de ambiente.  
+```js
+const mercadopago = require('mercadopago');
+mercadopago.configurations.setAccessToken(process.env.MERCADOPAGO_ACCESS_TOKEN);
+module.exports = mercadopago;
+```
+
+### src/config/swagger.js  
+Inicializa o **Swagger JSDoc** para gerar documentação OpenAPI a partir dos comentários nas rotas.  
+- Define `openapi: '3.0.0'`, informações, servidores e segurança JWT  
+- Varre `routes/v1/*.js` em busca de anotações  
+
+```js
+const options = {
+  definition: { /* info, servers, components */ },
+  apis: ['../../routes/v1/*.js']
+};
+module.exports = require('swagger-jsdoc')(options);
+```
+
+---
+
+# Componentes Swagger
+
+### src/componets/swagger/userRoutes.swagger.js  
+Define esquema OpenAPI para modelo `User`.  
+```yaml
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+```
+
+---
+
+# Middlewares
+
+### src/middlewares/authMiddleware.js  
+Valida JWT enviado em `Authorization: Bearer <token>`.  
+- Decodifica token com `jsonwebtoken`  
+- Anexa `req.user` com `id`, `role`, `companyId`  
+- Bloqueia acesso quando ausente ou inválido  
+
+### src/middlewares/roleMiddleware.js  
+Verifica se `req.user.role` está entre os perfis autorizados.  
+- Recebe lista ou valor único  
+- Retorna **403 Forbidden** em falta de permissão  
+
+---
+
+# Controllers
+
+Cada *Controller* recebe requisição HTTP, chama o **Service** correspondente e envia resposta JSON.
+
+### src/controller/AuthController.js  
+- `login(req, res)`: autentica e retorna JWT + dados do usuário  
+- `register(req, res)`: cadastra novo usuário (papel `admin` somente)  
+
+#### POST /auth/login  
+```api
+{
+  "title": "Login do Usuário",
+  "description": "Autentica usuário e retorna token JWT",
+  "method": "POST",
+  "baseUrl": "http://localhost:3000/api",
+  "endpoint": "/auth/login",
+  "bodyType": "json",
+  "requestBody": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"123456\"\n}",
+  "responses": {
+    "200": {
+      "description": "Autenticação bem-sucedida",
+      "body": "{\n  \"token\": \"<jwt>\",\n  \"user\": { \"id\": \"\", \"name\": \"\", \"email\": \"\", \"role\": \"\" }\n}"
+    },
+    "401": {
+      "description": "Credenciais inválidas",
+      "body": "{ \"message\": \"Credenciais inválidas\" }"
+    }
+  }
+}
+```
+
+#### POST /auth/register  
+```api
+{
+  "title": "Registro de Usuário",
+  "description": "Insere novo usuário (admin somente)",
+  "method": "POST",
+  "baseUrl": "http://localhost:3000/api",
+  "endpoint": "/auth/register",
+  "headers": [
+    { "key": "Authorization", "value": "Bearer <token>", "required": true }
+  ],
+  "bodyType": "json",
+  "requestBody": "{\n  \"name\": \"João\",\n  \"email\": \"joao@example.com\",\n  \"password\": \"senha123\",\n  \"role\": \"operator\",\n  \"cpf\": \"12345678900\"\n}",
+  "responses": {
+    "201": {
+      "description": "Usuário criado",
+      "body": "{ \"message\": \"Usuário criado com sucesso\" }"
+    },
+    "400": {
+      "description": "Dados inválidos",
+      "body": "{ \"message\": \"E-mail já cadastrado\" }"
+    }
+  }
+}
+```
+
+> Os demais Controllers (`Category`, `Customer`, `Dashboard`, `Payment`, `Product`, `Quote`, `Report`, `Sale`, `Stock`, `Supplier`, `order`, `user`) seguem padrão similar:
+> - Métodos CRUD/ação (`create`, `getAll`, `getById`, `update`, `delete`, ações específicas como `approveQuote`, `salesByPeriod` etc.)  
+> - Lance erros tratados em `try/catch` e retornam códigos HTTP adequados.  
+
+---
+
+# Migrations
+
+### src/migrations/001-init.js  
+Define modelos iniciais e coleções no MongoDB (usuários, categorias, produtos etc.).
+
+### src/migrations/002-order.js  
+Adiciona estrutura para pedidos (`OrderModel`), relacionando com clientes e itens.
+
+### src/migrations/migrateTenant.js  
+Script de migração multi-tenancy; repassa dados para diferentes **tenants** quando aplicável.
+
+---
+
+# Models
+
+Cada arquivo em `src/models` exporta esquema Mongoose e modelo.
+
+- **CategoryModel.js**: `name`, `description`, timestamps.  
+- **CompanyModel.js**: informações da empresa (para multi-tenant).  
+- **ConnectionModel.js**: controla conexões dinâmicas a bancos de dados.  
+- **CustomerModel.js**: `name`, `cpf`, contato, `active`.  
+- **DashboardCacheModel.js**: cache de relatórios para performance.  
+- **OrderModel.js**: referencia `Customer`, `createdBy` (usuário), `items` e valores.  
+- **ProductModel.js**: `code`, `name`, `category`, `costPrice`, `salePrice`, estoque e flags.  
+- **QuoteModel.js**: orçamento, itens, total, status (`draft`, `approved` etc.)  
+- **SaleModel.js**: vendas finais, método de pagamento, referências a `Quote` e `Customer`.  
+- **StockModel.js**: movimentações de estoque (`in`, `out`, ajustes), vinculado a produto, usuário, fornecedor/cliente.  
+- **SupplierModel.js**: `name`, `cnpj`, contato.  
+- **UserModel.js**: esquema de usuário com hooks para hash de senha e método `.comparePassword`.  
+
+```mermaid
+erDiagram
+    USER ||--o{ QUOTE : creates
+    USER ||--o{ SALE : sells
+    CUSTOMER ||--o{ ORDER : places
+    CATEGORY ||--o{ PRODUCT : classifies
+    PRODUCT ||--o{ STOCK : tracks
+    SUPPLIER ||--o{ STOCK : supplies
+```
+
+---
+
+# Rotas (v1)
+
+O roteador principal (`src/routes/v1/index.js`) monta sub-routers:
+
+- **/auth** → `auth.routes.js`  
+- **/products** → `products.routes.js`  
+- **/categories** → `category.routes.js`  
+- **/suppliers** → `supplier.routes.js`  
+- **/customers** → `customer.routes.js`  
+- **/stock** → `stock.routes.js`  
+- **/reports** → `report.routes.js`  
+- **/health** → `health.routes.js`  
+- **/users** → `user.routes.js`  
+- **/sales** → `sale.routes.js`  
+- **/quotes** → `quote.routes.js`  
+- **/orders** → `order.routes.js`  
+
+Cada arquivo de rotas importa o Controller correspondente e aplica `auth` e `authorize` conforme necessidade de papel.
+
+---
+
+# Serviços
+
+Em `src/services`, a lógica de negócio está centralizada:
+
+- **AuthService**: login (`jwt.sign`), registro de usuário.  
+- **CategoryService**: CRUD de categorias.  
+- **CustomerService**: valida CPF, gerencia clientes.  
+- **DashboardService**: agrega métricas (resumo, top produtos, alertas).  
+- **MPaymentService** & **PaymentService**: integração MercadoPago e controle de pagamentos.  
+- **ProductService**: validações de produto e busca.  
+- **QuoteService**: criação, aprovação, cancelamento e conversão de orçamentos.  
+- **ReportService**: gera relatórios, Excel via **ExcelJS**, PDF via **jsPDF**.  
+- **SaleService**: processa venda, calcula totais e atualiza estoque via `StockService`.  
+- **StockService**: registra movimentações, consulta histórico e status.  
+- **SupplierService**: CRUD de fornecedores.  
+- **orderService**: lógica relacionada a pedidos (futuro).  
+- **userService**: busca, atualização e desativação de usuários.  
+
+---
+
+# Utilitários
+
+Validadores para documentos brasileiros em `src/utils/validators`:
+
+- **ValidateCPF.js**: verifica CPF  
+- **validateCNPJ.js**: verifica CNPJ  
+- **validadeCEP.js**: formata/valida CEP  
+
+---
+
+# Arquivos Principais
+
+### src/app.js  
+Configura Express:  
+- Middlewares: `cors()`, `express.json()`  
+- Swagger UI em `/api/docs`  
+- Monta roteador `app.use('/api', router)`  
+
+### src/server.js  
+Inicia servidor na porta definida em `.env` ou 3000.  
+
+```bash
+node src/server.js
+```
+
+```mermaid
+flowchart TD
+  Cliente -->|HTTP| Rota[/api/...]
+  Rota --> Auth[authMiddleware]
+  Auth --> Role[roleMiddleware]
+  Role --> Controller
+  Controller --> Service
+  Service --> Model
+  Model --> MongoDB[(MongoDB)]
+```
+
+---
+
+Este conjunto de arquivos compõe o backend completo, onde cada camada (rota, middleware, controller, service, model) interage de forma organizada. Os **seeds** auxiliam no pré-carregamento de dados; as **migrations** estruturam o banco; os **models** definem o esquema; os **services** contêm a regra de negócio; os **controllers** orquestram requests e responses; e os **routes** expõem a API RESTful, documentada via **Swagger**.
 
 **Desenvolvido por**: ColoriSystems
 **Data**: 11 de janeiro de 2026

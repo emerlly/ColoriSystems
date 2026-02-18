@@ -31,13 +31,13 @@ const quoteSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ['draft', 'approved', 'converted', 'cancelled'],
-      default: 'draft'
+      enum: ['rascunho', 'aprovado', 'convertido', 'cancelado'],
+      default: 'rascunho'
     },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'users',
       required: true
     },
 

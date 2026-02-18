@@ -135,10 +135,7 @@ class DashboardService {
             { $sort: { period: 1 } },
         ]);
 
-        await this.setCache(companyId, "salesByPeriod", startDate, endDate, data);
-
-        console.log("Sales by period data:", data);
-        
+        await this.setCache(companyId, "salesByPeriod", startDate, endDate, data);        
         return data;
     }
 

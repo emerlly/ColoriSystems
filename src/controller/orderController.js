@@ -15,7 +15,6 @@ class OrderController {
   }
 
   async getAll(req, res) {
-    console.log('req.companyId', req.companyId);
     try {
       const orders = await orderService.getAll(req.companyId);
       res.json(orders);

@@ -48,9 +48,14 @@ const stockMovementSchema = new mongoose.Schema(
 
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: 'users',
       required: true,
       index: true
+    },
+    reason: {
+      type: String,
+      required: true,
+      enum: ['compra', 'venda', 'devolução', 'correção', 'outro']
     },
 
     notes: {
